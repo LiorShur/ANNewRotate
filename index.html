@@ -1,0 +1,471 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv='cache-control' content='no-cache'> 
+  <meta http-equiv='expires' content='0'> 
+  <meta http-equiv='pragma' content='no-cache'>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Access Nature</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.7.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    html, body, #map {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    #map-container {
+      width: 200%; /* Increased from √2 for better coverage */
+      height: 200%;
+      position: absolute;
+      top: -50%; /* Center the oversized container: (160-100)/2 = 30% */
+      left: -50%;
+      transform-origin: center center;
+      transition: none; /* Removed CSS transition - we handle smoothing in JS */
+    }
+    #toggleBtn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      background: white;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    #debug {
+      position: absolute;
+      top: 50px;
+      left: 10px;
+      z-index: 1000;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 8px;
+      font-family: monospace;
+      font-size: 12px;
+      border-radius: 4px;
+      display: none;
+    }
+    #compass {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      width: 60px;
+      height: 60px;
+      background: rgba(255,255,255,0.9);
+      border: 2px solid #333;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      transform-origin: center center;
+      transition: none;
+    }
+    #compass-needle {
+      width: 2px;
+      height: 40px;
+      position: relative;
+      transform-origin: center bottom;
+    }
+    #compass-needle::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -3px;
+      width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-bottom: 20px solid #e74c3c; /* Red for North */
+    }
+    #compass-needle::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: -3px;
+      width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 20px solid #34495e; /* Dark gray for South */
+    }
+    #compass-center {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #2c3e50;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body>
+<div id="debug"></div>
+  <div id="compass">
+    <div id="compass-needle"></div>
+    <div id="compass-center"></div>
+  </div>
+  <div id="map-container">
+    <div id="map"></div>
+  </div>
+<!-- Top tracker bar -->
+<div class="top-bar">
+  <button id="startBtn" class="round-button" onclick="startTracking()">▶️</button>
+  <button id="pauseBtn" class="round-button" onclick="togglePause()">⏸</button>
+  <button id="stopBtn" class="round-button" onclick="stopTracking()">⏹</button>
+  <span id="timer">00:00:00</span> |
+  <span id="distance">0.00 km</span>
+</div>
+
+<!-- Floating control buttons -->
+<div class="floating-left">
+  <button id="toggleBtn" class="round-button">🧭</button>
+  <button class="round-button" onclick="openAccessibilityForm()">♿</button>
+  <button class="round-button" onclick="toggleDarkMode()">🌓</button>
+</div>
+
+<div class="floating-right">
+  <button class="round-button" onclick="toggleMediaPanel()">➕</button>
+</div>
+
+<div class="media-panel" id="mediaPanel">
+  <button id="takePhotoBtn" class="round-button" onclick="capturePhoto()">📸</button>
+  <button class="round-button" onclick="addTextNote()">📝</button>
+  <!-- <button class="round-button" onclick="recordAudio()">🎙️</button> -->
+  <button class="round-button" onclick="showRouteDataOnMap()">🗺️</button>
+</div>
+
+<!-- Bottom Navigation Bar -->
+<div id="bottomNav" class="bottom-nav">
+  <button onclick="togglePanel('exportPanel')">📤 Export</button>
+  <button onclick="togglePanel('summaryPanel')">📚 Summaries</button>
+  <button onclick="togglePanel('devToolsPanel')">🛠️ Dev Tools</button>
+</div>
+
+<!-- Panels -->
+<div id="exportPanel" class="bottom-popup hidden">
+  <button id="prepareAndExportBtn" onclick="prepareAndExport()">📦 Export Last Route</button>
+  <button id="exportAllRoutesBtn" onclick="exportAllRoutes()">🌍 Export All Routes</button>
+  <button id="exportDataBtn" onclick="exportData()">📄 JSON</button>
+  <button id="exportPDFBtn" onclick="exportPDF()">📄 PDF</button>
+  <button id="exportGPXBtn" onclick="exportGPX()">📍 GPX</button>
+</div>
+
+<div id="summaryPanel" class="bottom-popup hidden">
+  <button id="toggleArchivePanelBtn" onclick="toggleArchivePanel()">📜 Browse Summaries</button>
+  <div id="archivePanel" class="toggle-panel"></div>
+  <button id="clearArchiveBtnBtn" onclick="SummaryArchive.clearAll()">🗑️ Clear All Summaries</button>
+  <button id="clearAllSessionsBtn" onclick="clearAllSessions()">🗑️ Clear Saved Routes</button>
+  <button id="clearAllAppDataBtn" onclick="clearAllAppData()">🧹 Clear Everything</button>
+</div>
+
+<div id="devToolsPanel" class="bottom-popup hidden">
+  <button onclick="showStorageMonitor()">🧪 Storage Monitor</button>
+  <button onclick="triggerImport()">📥 Import Route (JSON/GPX)</button>
+  <button id="resetBtn" onclick="confirmAndResetApp()">📍 Reset App</button>
+</div>
+
+<!-- Hidden elements preserved for app logic -->
+<div id="controls" style="display:none;"></div>
+<div id="archivePanel" class="toggle-panel" style="display:none;"></div>
+<div id="historyPanel" style="display:none;"><ul id="historyList"></ul></div>
+<!-- <div id="accessibilityOverlay" style="display:none;"><div id="accessibilityFormContainer"></div></div> -->
+<!-- <canvas id="elevationChart" style="display:none;"></canvas> -->
+<input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none;" />
+<input type="file" id="videoInput" accept="video/*" capture style="display:none;" />
+<input type="file" id="importFile" accept=".json,.gpx" style="display:none;" />
+
+<div class="sessions">
+      <h3>📂 Saved Routes</h3>
+      <ul id="savedSessionsList"></ul>
+    </div>
+
+<div id="accessibilityOverlay" style="display:none;">
+  <div id="accessibilityFormContainer">
+    <h2>🧭 Accessibility Questionnaire</h2>
+    <form id="accessibilityForm">
+      <button type="button" onclick="closeAccessibilityForm()">🚪 סגור</button>
+
+      <label>חניות נכים – כמה:</label>
+      <input type="number" name="disabledParkingCount" required>
+      <label>תמונה:</label>
+      <input type="file" name="disabledParkingImage" accept="image/*"><br><br>
+
+      <label>תיאור הדרך:</label>
+      <select name="pathType" required>
+        <option value="">בחר</option>
+        <option>אספלט</option>
+        <option>בטון</option>
+        <option>דק עץ</option>
+        <option>שביל כורכר (לא נגיש)</option>
+      </select>
+      <label>תמונה:</label>
+      <input type="file" name="pathImage" accept="image/*"><br><br>
+
+      <label>אורך הדרך הנגישה (במטרים):</label>
+      <input type="number" name="accessibleLength" required>
+
+      <label>סוג המסלול:</label>
+      <select name="routeType">
+        <option>הלוך חזור</option>
+        <option>מעגלי</option>
+      </select>
+
+      <label>שיפוע השביל:</label>
+      <select name="slope">
+        <option>אופקי</option>
+        <option>שיפועים מתונים</option>
+        <option>שיפועים תלולים (לא נגיש)</option>
+      </select>
+
+      <label>נקודות עניין לאורך הדרך:</label>
+      <textarea name="pointsOfInterest"></textarea>
+      <label>תמונה:</label>
+      <input type="file" name="poiImage" accept="image/*"><br><br>
+
+      <label>תצפיות:</label>
+      <input type="checkbox" name="lookouts"> יש
+      <label>תמונה:</label>
+      <input type="file" name="lookoutImage" accept="image/*"><br><br>
+
+      <label>פינות פיקניק נגישות:</label>
+      <input type="checkbox" name="picnicSpots"> יש
+      <label>תמונה:</label>
+      <input type="file" name="picnicImage" accept="image/*"><br><br>
+
+      <label>שירותי נכים:</label>
+      <input type="checkbox" name="accessibleToilets"> יש
+      <label>תמונה:</label>
+      <input type="file" name="toiletImage" accept="image/*"><br><br>
+
+      <label>ספסלים לאורך הדרך:</label>
+      <input type="checkbox" name="benches"> יש
+      <label>תמונה:</label>
+      <input type="file" name="benchImage" accept="image/*"><br><br>
+
+      <label>הצללה:</label>
+      <select name="shade">
+        <option>מוצל</option>
+        <option>מוצל חלקית</option>
+        <option>לא מוצל</option>
+      </select><br><br>
+
+      <button type="submit">✔️ שמור</button>
+      <button type="button" onclick="closeAccessibilityForm()">❌ ביטול</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function toggleMediaPanel() {
+    const panel = document.getElementById("mediaPanel");
+    panel.classList.toggle("open");
+  }
+</script>
+<script>
+  let rotationEnabled = false;
+  let currentHeading = 0;
+  let smoothedHeading = 0;
+  let animationFrameId = null;
+  let lastUpdateTime = 0;
+  let headingHistory = [];
+  const HISTORY_SIZE = 5;
+  const SMOOTHING_FACTOR = 0.15; // Increased for more responsiveness
+  const MIN_CHANGE_THRESHOLD = 0.3; // Only update if change is significant enough
+  
+  const mapContainer = document.getElementById('map-container');
+  const toggleBtn = document.getElementById('toggleBtn');
+  const debugDiv = document.getElementById('debug');
+  const compassDiv = document.getElementById('compass');
+  
+  // Initialize map
+  // const map = L.map('map').setView([51.505, -0.09], 13);
+  // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  //   attribution: '&copy; OpenStreetMap contributors'
+  // }).addTo(map);
+
+  // Utility function to normalize angles to 0-360 range
+  function normalizeAngle(angle) {
+    return ((angle % 360) + 360) % 360;
+  }
+
+  // Calculate shortest angular distance between two angles
+  function angleDifference(target, current) {
+    const diff = normalizeAngle(target - current);
+    return diff > 180 ? diff - 360 : diff;
+  }
+
+  // Apply moving average to smooth compass readings
+  function addToHistory(heading) {
+    headingHistory.push(heading);
+    if (headingHistory.length > HISTORY_SIZE) {
+      headingHistory.shift();
+    }
+  }
+
+  function getSmoothedHeading() {
+    if (headingHistory.length === 0) return currentHeading;
+    
+    // Use circular mean for angle averaging
+    let sinSum = 0, cosSum = 0;
+    for (let heading of headingHistory) {
+      const rad = heading * Math.PI / 180;
+      sinSum += Math.sin(rad);
+      cosSum += Math.cos(rad);
+    }
+    
+    const avgRad = Math.atan2(sinSum / headingHistory.length, cosSum / headingHistory.length);
+    return normalizeAngle(avgRad * 180 / Math.PI);
+  }
+
+  // Toggle button handler
+  toggleBtn.addEventListener('click', () => {
+    rotationEnabled = !rotationEnabled;
+    toggleBtn.innerText = rotationEnabled ? 'Disable Rotation' : 'Enable Rotation';
+    
+    if (rotationEnabled) {
+      // Initialize smoothed heading to current heading
+      smoothedHeading = currentHeading;
+      headingHistory = [currentHeading];
+      debugDiv.style.display = 'block';
+      startRotationLoop();
+    } else {
+      cancelAnimationFrame(animationFrameId);
+      mapContainer.style.transform = 'rotate(0deg)';
+      compassDiv.style.transform = 'rotate(0deg)';
+      debugDiv.style.display = 'none';
+    }
+  });
+
+  // Enhanced compass reading with error checking
+  function handleOrientation(event) {
+    let heading = null;
+    
+    // Try different compass heading sources
+    if (typeof event.webkitCompassHeading !== "undefined") {
+      heading = event.webkitCompassHeading;
+    } else if (event.alpha !== null && event.alpha !== undefined) {
+      heading = 360 - event.alpha; // Convert to compass heading
+    }
+    
+    // Validate heading
+    if (heading !== null && !isNaN(heading) && isFinite(heading)) {
+      heading = normalizeAngle(heading);
+      
+      // Only update if significant change to reduce noise
+      const change = Math.abs(angleDifference(heading, currentHeading));
+      if (change > MIN_CHANGE_THRESHOLD || headingHistory.length === 0) {
+        currentHeading = heading;
+        addToHistory(heading);
+      }
+    }
+  }
+
+  // Request permission for device orientation on iOS
+  function requestOrientationPermission() {
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission()
+        .then(permissionState => {
+          if (permissionState === 'granted') {
+            attachOrientationListeners();
+          } else {
+            alert('Device orientation permission denied');
+          }
+        })
+        .catch(console.error);
+    } else {
+      attachOrientationListeners();
+    }
+  }
+
+  function attachOrientationListeners() {
+    if ('ondeviceorientationabsolute' in window) {
+      window.addEventListener('deviceorientationabsolute', handleOrientation, true);
+    } else {
+      window.addEventListener('deviceorientation', handleOrientation, true);
+    }
+  }
+
+  // Start rotation animation loop
+  function startRotationLoop() {
+    if (!rotationEnabled) return;
+    
+    const now = performance.now();
+    const deltaTime = now - lastUpdateTime;
+    
+    // Throttle updates to ~60fps
+    if (deltaTime >= 16) {
+      updateRotation();
+      lastUpdateTime = now;
+    }
+    
+    animationFrameId = requestAnimationFrame(startRotationLoop);
+  }
+
+  // Smooth rotation update
+  function updateRotation() {
+    if (!rotationEnabled) return;
+    
+    const targetHeading = getSmoothedHeading();
+    const diff = angleDifference(targetHeading, smoothedHeading);
+    
+    // Apply exponential smoothing
+    smoothedHeading += diff * SMOOTHING_FACTOR;
+    smoothedHeading = normalizeAngle(smoothedHeading);
+    
+    // Only apply transform if change is significant
+    if (Math.abs(diff) > 0.1) {
+      mapContainer.style.transform = `rotate(${-smoothedHeading}deg)`;
+      compassDiv.style.transform = `rotate(${smoothedHeading}deg)`;
+    }
+    
+    // Update debug info
+    debugDiv.innerHTML = `
+      Raw: ${currentHeading.toFixed(1)}°<br>
+      Target: ${targetHeading.toFixed(1)}°<br>
+      Smooth: ${smoothedHeading.toFixed(1)}°<br>
+      Diff: ${diff.toFixed(1)}°
+    `;
+  }
+
+  // Initialize orientation listeners
+  if (window.location.protocol === 'https:') {
+    requestOrientationPermission();
+  } else {
+    attachOrientationListeners();
+  }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<!-- Leaflet Control Geocoder CSS + JS -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"
+/>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<script src="app.js"></script>
+
+<!-- Developer Tools Panel -->
+<div id="developerToolsPanel" class="bottom-panel" style="display:none;">
+  <button onclick="toggleDarkMode()">🌙☀️ Dark/Light Mode</button>
+  <button id="clearAllAppDataBtn" onclick="clearAllAppData()">🧹 Clear Everything</button>
+  <button id="clearAllSessionsBtn" onclick="clearAllSessions()">🗑️ Clear All Saved Routes</button>
+  <button id="resetBtn" onclick="confirmAndResetApp()">📍**!Reset App!**📍</button>
+  <button onclick="triggerImport()">📥 Import Route (JSON/GPX)</button>
+  <button onclick="showPhotoCleanupDialog()">📥 Handle photos (JSON/GPX)</button>
+</div>
+
+</body>
+</html>
