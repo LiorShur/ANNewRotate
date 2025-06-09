@@ -332,7 +332,7 @@
   // Toggle button handler
   toggleBtn.addEventListener('click', () => {
     rotationEnabled = !rotationEnabled;
-    toggleBtn.background = rotationEnabled ? green : black;
+    toggleBtn.innerText = rotationEnabled ? 'Disable Rotation' : 'Enable Rotation';
     
     if (rotationEnabled) {
       // Initialize smoothed heading to current heading
