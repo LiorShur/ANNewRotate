@@ -29,8 +29,8 @@ html, body {
 }
 
     .top-bar, .bottom-bar, .media-panel, .floating-left, .floating-right {
-      position: absolute;
-      z-index: 1000;
+      position: fixed !important;
+      z-index: 2000;
     }
     .top-bar {
       top: 10px;
