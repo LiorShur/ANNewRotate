@@ -28,11 +28,159 @@ html, body {
   border-bottom: 1px solid #ccc;
 }
 
-    .top-bar, .bottom-bar, .media-panel, .floating-left, .floating-right {
+/* Add these styles to your styles.css to fix the floating elements */
+
+/* Fix for top tracker bar */
+.top-bar {
+  position: fixed !important; /* Changed from absolute */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000 !important; /* Higher than map container */
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Fix for floating left buttons */
+.floating-left {
+  position: fixed !important; /* Changed from absolute */
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2000 !important;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Fix for floating right buttons */
+.floating-right {
+  position: fixed !important; /* Changed from absolute */
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2000 !important;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Fix for media panel */
+.media-panel {
+  position: fixed !important; /* Changed from absolute */
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%) translateX(60px); /* Offset from floating-right */
+  z-index: 2000 !important;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.media-panel.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Fix for bottom navigation */
+.bottom-nav {
+  position: fixed !important; /* Changed from absolute */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000 !important;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Fix for bottom panels */
+.bottom-popup {
+  position: fixed !important; /* Changed from absolute */
+  bottom: 60px; /* Adjust based on bottom-nav height */
+  left: 0;
+  right: 0;
+  z-index: 2000 !important;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+/* Fix for accessibility overlay */
+#accessibilityOverlay {
+  position: fixed !important; /* Changed from absolute */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3000 !important; /* Highest priority */
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+#accessibilityFormContainer {
+  position: fixed !important;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3001 !important;
+  background: white;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Fix for sessions panel */
+.sessions {
+  position: fixed !important;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  z-index: 2000 !important;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+/* Ensure all round buttons maintain proper styling */
+.round-button {
+  position: relative; /* Ensure buttons don't inherit positioning issues */
+  z-index: inherit;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Fix for any other floating elements */
+.toggle-panel {
+  position: fixed !important;
+  z-index: 2000 !important;
+}
+
+/* Ensure compass and debug stay properly positioned */
+#compass, #debug {
+  position: fixed !important;
+  z-index: 2500 !important; /* Higher than other UI elements but lower than overlays */
+}
+
+/*     .top-bar, .bottom-bar, .media-panel, .floating-left, .floating-right {
       position: fixed !important;
       z-index: 2000;
-    }
-    .top-bar {
+    } */
+/*     .top-bar {
       top: 10px;
       left: 50%;
       transform: translateX(-50%);
@@ -43,8 +191,8 @@ html, body {
       display: flex;
       gap: 5px;
       align-items: center;
-    }
-    .bottom-banner {
+    } */
+/*     .bottom-banner {
   position: fixed;
   bottom: 0;
   width: 100%;
@@ -56,14 +204,14 @@ html, body {
   justify-content: space-around;
   z-index: 9998;
   padding: 10px 5px;
-}
+} */
 
-.bottom-panel {
+/* .bottom-panel {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: 5px;
-}
+} */
 
 .bottom-panel button {
   margin: 4px 0;
@@ -75,22 +223,22 @@ html, body {
   cursor: pointer;
 }
 
-    .floating-left {
+/*     .floating-left {
       bottom: 80px;
       left: 10px;
       display: flex;
       flex-direction: column;
       gap: 10px;
-    }
-    .floating-right {
+    } */
+/*     .floating-right {
       bottom: 80px;
       right: 10px;
       display: flex;
       flex-direction: column;
       gap: 10px;
-    }
+    } */
    
-    .round-button {
+/*     .round-button {
   width: 50px;
   height: 50px;
   background-color: black; /* or green etc. */
@@ -104,13 +252,13 @@ html, body {
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   transition: background 0.3s;
-}
+} */
 
 .round-button:hover {
   background-color: #333;
 }
 
-.media-panel {
+/* .media-panel {
       right: 8px;
       bottom: 140px;
       display: none;
@@ -120,12 +268,12 @@ html, body {
       background: transparent;
       padding: 02px;
       border-radius: 8px;
-    }
-    .media-panel.open {
+    } */
+/*     .media-panel.open {
       display: flex;
-    }
+    } */
 
- .bottom-nav {
+/*  .bottom-nav {
   position: fixed;
   bottom: 0;
   width: 100%;
@@ -136,7 +284,7 @@ html, body {
   padding: 8px 0;
   box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2);
   z-index: 10000;
-}
+} */
 
 .bottom-nav button {
   flex: 1;
@@ -149,7 +297,7 @@ html, body {
   font-weight: bold;
 }
 
-.bottom-popup {
+/* .bottom-popup {
   position: fixed;
   bottom: 50px;
   left: 5%;
@@ -163,7 +311,7 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
+} */
 
 .bottom-popup.hidden {
   display: none;
@@ -390,12 +538,12 @@ background-color: #2196F3;
 .dropdown:hover .dropdown-content {
   display: block;
 }
-.toggle-panel {
+/* .toggle-panel {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease;
   margin-top: 5px; /* ensures space below button */
-}
+} */
 
 .toggle-panel.open {
   max-height: 500px; /* or auto with care */
@@ -425,7 +573,7 @@ width: 40px;
   font-size: 12px;
 }
 
-#accessibilityOverlay {
+/* #accessibilityOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -437,9 +585,9 @@ width: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
-}
+} */
 
-#accessibilityFormContainer {
+/* #accessibilityFormContainer {
   direction: rtl;
   text-align: right;
   background: #fff;
@@ -450,7 +598,7 @@ width: 40px;
   max-width: 500px;
   border-radius: 10px;
   box-shadow: 0 0 10px #333;
-}
+} */
 
 
 #accessibilityForm {
