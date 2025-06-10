@@ -435,6 +435,40 @@
       display: none !important;
     }
 
+    .storage-monitor {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 250px;
+  max-height: 90vh;
+  background: #f5f5f5;
+  border: 1px solid #999;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  padding: 10px;
+  z-index: 10000;
+}
+
+.storage-monitor img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 3px;
+  border: 1px solid #999;
+}
+
+.storage-monitor button {
+  font-size: 12px;
+  cursor: pointer;
+}
+    #localStorageStatus.dragging {
+  transition: none !important;
+  cursor: move;
+}
+
+
     /* MOBILE RESPONSIVE DESIGN */
     @media (max-width: 768px) {
       .top-bar {
@@ -626,37 +660,7 @@
       }
     }
 
-    .storage-monitor {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 250px;
-  max-height: 90vh;
-  background: #f5f5f5;
-  border: 1px solid #999;
-  border-radius: 5px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-  padding: 10px;
-  z-index: 10000;
-}
-
-.storage-monitor img {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 3px;
-  border: 1px solid #999;
-}
-
-.storage-monitor button {
-  font-size: 12px;
-  cursor: pointer;
-}
-
-
-    /* TOUCH OPTIMIZATION */
+     /* TOUCH OPTIMIZATION */
     @media (hover: none) and (pointer: coarse) {
       .round-button {
         min-width: 44px;
