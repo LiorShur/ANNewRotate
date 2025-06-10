@@ -22,6 +22,20 @@
       overflow: hidden;
     }
 
+    /* Floating elements container - this is the key solution */
+        .floating-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none; /* Allow clicks to pass through empty areas */
+            z-index: 1000;
+            padding: 10px; /* Safe margin from screen edges */
+            box-sizing: border-box;
+        }
+
+
     #map, #map-container {
       height: 100%;
       margin: 0;
@@ -666,6 +680,7 @@
   <div id="map"></div>
 </div>
 
+  <div class="floating-container" id="floatingContainer">
 <!-- Top tracker bar -->
 <div class="top-bar">
   <button id="startBtn" class="round-button" onclick="startTracking()">▶️</button>
@@ -798,6 +813,7 @@
       <button type="button" onclick="closeAccessibilityForm()">❌ Cancel</button>
     </form>
   </div>
+</div>
 </div>
 
 <!-- Hidden elements preserved for app logic -->
