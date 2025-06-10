@@ -2039,254 +2039,398 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-(function () {
-  const monitorId = "localStorageStatus";
-  let panel = document.getElementById(monitorId);
+// (function () {
+//   const monitorId = "localStorageStatus";
+//   let panel = document.getElementById(monitorId);
 
-  if (!panel) {
-    panel = document.createElement("div");
-    panel.id = monitorId;
-    panel.className = "storage-monitor";
+//   if (!panel) {
+//     panel = document.createElement("div");
+//     panel.id = monitorId;
+//     panel.className = "storage-monitor";
   
-    panel.innerHTML = `
-      <div id="storageHeader" style="cursor: pointer;">📦 localStorage Monitor ▼</div>
-      <div id="storageContent"></div>
-      <audio id="storageAlertAudio" style="display:none">
-        <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YQAAAAA=" type="audio/wav">
-      </audio>
-    `;
+//     panel.innerHTML = `
+//       <div id="storageHeader" style="cursor: pointer;">📦 localStorage Monitor ▼</div>
+//       <div id="storageContent"></div>
+//       <audio id="storageAlertAudio" style="display:none">
+//         <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YQAAAAA=" type="audio/wav">
+//       </audio>
+//     `;
 
-    document.body.appendChild(panel);
+//     document.body.appendChild(panel);
 
-  }
+//   }
 
-    function getLocalStorageSizeInfo() {
-    let totalBytes = 0;
-    let photoBytes = 0;
-    let photoCount = 0;
+//     function getLocalStorageSizeInfo() {
+//     let totalBytes = 0;
+//     let photoBytes = 0;
+//     let photoCount = 0;
 
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      const value = localStorage.getItem(key);
-      if (!value) continue;
+//     for (let i = 0; i < localStorage.length; i++) {
+//       const key = localStorage.key(i);
+//       const value = localStorage.getItem(key);
+//       if (!value) continue;
 
-      const size = new Blob([value]).size;
-      totalBytes += size;
+//       const size = new Blob([value]).size;
+//       totalBytes += size;
 
       
-      try {
-  const sessions = JSON.parse(localStorage.getItem("sessions") || "[]");
+//       try {
+//   const sessions = JSON.parse(localStorage.getItem("sessions") || "[]");
 
-  sessions.forEach(session => {
-    if (!session.data || !Array.isArray(session.data)) return;
+//   sessions.forEach(session => {
+//     if (!session.data || !Array.isArray(session.data)) return;
 
-    session.data.forEach(entry => {
-      if (entry.type === "photo" && entry.content && entry.content.startsWith("data:image/")) {
-        photoCount++;
-        photoBytes += new Blob([entry.content]).size;
-      }
+//     session.data.forEach(entry => {
+//       if (entry.type === "photo" && entry.content && entry.content.startsWith("data:image/")) {
+//         photoCount++;
+//         photoBytes += new Blob([entry.content]).size;
+//       }
+//     });
+//   });
+// } catch (e) {
+//   console.warn("⚠️ Failed to parse sessions for photo usage:", e);
+// }
+
+//     }
+
+//   const maxKB = 5 * 1024;
+//   const totalKB = totalBytes / 1024;
+//   const availableKB = maxKB - totalKB;
+//   const maxBytes = 5 * 1024 * 1024;
+
+//   return {
+//     totalKB: totalKB.toFixed(1),
+//     availableKB: availableKB.toFixed(1),
+//     photoKB: (photoBytes / 1024).toFixed(1),
+//     photoCount,
+//     photoBytes, // ✅ Add this!
+//     totalBytes // optional but useful
+//   };
+//   }
+
+//   window.renderLocalStorageStatus = function () {
+//   const content = document.getElementById("storageContent");
+//   if (!content) return;
+
+//   const { totalKB, availableKB, photoKB, photoCount, totalBytes, maxBytes } = getLocalStorageSizeInfo();
+//   const percent = ((totalBytes / maxBytes) * 100).toFixed(1);
+
+//   // Header info
+//   content.innerHTML = `
+//     • Used: ${totalKB} KB<br>
+//     • Available: ${availableKB} KB
+//   `;
+
+//   // Warning
+//   if (parseFloat(percent) >= 50) {
+//     content.innerHTML += `<div style="color: yellow; margin-top: 5px;">⚠️ Approaching localStorage limit!</div>`;
+//     if (!window.hasWarned) {
+//       new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg").play().catch(() => {});
+//       window.hasWarned = true;
+//     }
+//   } else {
+//     window.hasWarned = false;
+//   }
+
+
+//   // Add thumbnails
+//   const photoThumbs = document.createElement("div");
+//   photoThumbs.style.cssText = `
+//     margin-top: 10px;
+//     display: flex;
+//     flex-wrap: wrap;
+//     gap: 6px;
+//     max-height: 120px;
+//     overflow-y: auto;
+//     padding: 2px;
+//     border-top: 1px solid #ccc;
+//     margin-top: 10px;
+//   `;
+
+//   const photos = getLocalStoragePhotos(); // ← assumes existing function
+
+//   photos.forEach((photo, index) => {
+//     if (!photo.content || !photo.content.startsWith("data:image")) return;
+
+//     const wrapper = document.createElement("div");
+//     wrapper.style.cssText = `
+//       position: relative;
+//       display: inline-block;
+//     `;
+
+//     const img = document.createElement("img");
+//     img.src = photo.content;
+//     img.alt = `Photo ${index + 1}`;
+//     img.style.cssText = `
+//       width: 50px;
+//       height: 50px;
+//       object-fit: cover;
+//       border-radius: 3px;
+//       border: 1px solid #999;
+//       max-width: 100%;
+//       height: auto;
+//     `;
+
+// img.onclick = () => {
+//   const viewer = document.createElement("div");
+//   viewer.style.cssText = `
+//     position: fixed;
+//     top: 0; left: 0;
+//     width: 100vw; height: 100vh;
+//     background: rgba(0, 0, 0, 0.9);
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     z-index: 10001;
+//   `;
+
+//   const fullImg = document.createElement("img");
+//   fullImg.src = photo.content;
+//   fullImg.style.maxWidth = "90%";
+//   fullImg.style.maxHeight = "90%";
+//   fullImg.style.border = "2px solid white";
+
+//   viewer.appendChild(fullImg);
+//   viewer.onclick = () => viewer.remove(); // Click to close
+//   document.body.appendChild(viewer);
+// };
+
+
+//     const delBtn = document.createElement("button");
+//     delBtn.textContent = "✖";
+//     delBtn.title = "Delete photo";
+//     delBtn.style.cssText = `
+//       position: absolute;
+//       top: -6px;
+//       right: -6px;
+//       background: red;
+//       color: white;
+//       border: none;
+//       border-radius: 50%;
+//       width: 16px;
+//       height: 16px;
+//       font-size: 10px;
+//       cursor: pointer;
+//       line-height: 16px;
+//       padding: 0;
+//     `;
+
+//     delBtn.onclick = () => {
+//       deletePhotoByTimestamp(photo.timestamp, photo.isBackup);
+//       renderLocalStorageStatus();
+//     };
+
+//     wrapper.appendChild(img);
+//     wrapper.appendChild(delBtn);
+//     photoThumbs.appendChild(wrapper);
+//   });
+
+//   if (photoThumbs.childElementCount > 0) {
+//     content.appendChild(photoThumbs);
+//   }
+
+//   if (photoThumbs.childElementCount > 0) {
+//   const tools = document.createElement("div");
+//   tools.innerHTML = `
+//     <button id="deleteAllPhotosBtn" style="margin-top: 10px;">🗑️ Delete All Photos</button>
+//     <button id="exportPhotosBtn" style="margin-left: 10px;">💾 Export Photos JSON</button>
+//   `;
+//   content.appendChild(tools);
+
+//   tools.querySelector("#deleteAllPhotosBtn").onclick = () => {
+//     if (confirm("Are you sure you want to delete all stored photos?")) {
+//       deleteAllPhotos();
+//       renderLocalStorageStatus();
+//     }
+//   };
+
+//   tools.querySelector("#exportPhotosBtn").onclick = () => {
+//     exportAllPhotosAsJSON();
+//   };
+// }
+
+// };
+
+// function deletePhotoByTimestamp(timestamp) {
+//   let updated = false;
+
+//   // 1. Remove from sessions
+//   const sessions = JSON.parse(localStorage.getItem("sessions") || "[]");
+//   sessions.forEach(session => {
+//     if (Array.isArray(session.data)) {
+//       const originalLength = session.data.length;
+//       session.data = session.data.filter(p => p.type !== "photo" || p.timestamp !== timestamp);
+//       if (session.data.length < originalLength) updated = true;
+//     }
+//   });
+//   if (updated) localStorage.setItem("sessions", JSON.stringify(sessions));
+
+//   // 2. Remove from route_backup if exists
+//   const backup = JSON.parse(localStorage.getItem("route_backup") || "{}");
+//   if (Array.isArray(backup.routeData)) {
+//     const originalLength = backup.routeData.length;
+//     backup.routeData = backup.routeData.filter(p => p.type !== "photo" || p.timestamp !== timestamp);
+//     if (backup.routeData.length < originalLength) {
+//       localStorage.setItem("route_backup", JSON.stringify(backup));
+//     }
+//   }
+// }
+
+// function deleteAllPhotos() {
+//   // Clear photo entries from sessions
+//   const sessions = JSON.parse(localStorage.getItem("sessions") || "[]");
+//   sessions.forEach(session => {
+//     if (Array.isArray(session.data)) {
+//       session.data = session.data.filter(e => e.type !== "photo");
+//     }
+//   });
+//   localStorage.setItem("sessions", JSON.stringify(sessions));
+
+//   // Clear photo entries from backup
+//   const backup = JSON.parse(localStorage.getItem("route_backup") || "{}");
+//   if (Array.isArray(backup.routeData)) {
+//     backup.routeData = backup.routeData.filter(e => e.type !== "photo");
+//     localStorage.setItem("route_backup", JSON.stringify(backup));
+//   }
+// }
+
+// function exportAllPhotosAsJSON() {
+//   const photos = getLocalStoragePhotos();
+//   if (photos.length === 0) return alert("No photos to export.");
+
+//   const jsonBlob = new Blob([JSON.stringify(photos, null, 2)], { type: "application/json" });
+//   const url = URL.createObjectURL(jsonBlob);
+
+//   const a = document.createElement("a");
+//   a.href = url;
+//   a.download = "photos_export.json";
+//   a.click();
+
+//   URL.revokeObjectURL(url);
+// }
+
+
+//   // Draggable
+// //   (function makeDraggable() {
+// //   const panel = document.getElementById("localStorageStatus");
+// //   const header = document.getElementById("storageHeader");
+
+// //   let offsetX = 0, offsetY = 0, isDragging = false;
+
+// //   header.addEventListener("mousedown", e => {
+// //     isDragging = true;
+// //     offsetX = e.clientX - panel.offsetLeft;
+// //     offsetY = e.clientY - panel.offsetTop;
+// //     panel.style.transition = "none";
+// //   });
+
+// //   document.addEventListener("mouseup", () => isDragging = false);
+
+// //   document.addEventListener("mousemove", e => {
+// //     if (isDragging) {
+// //       panel.style.left = `${e.clientX - offsetX}px`;
+// //       panel.style.top = `${e.clientY - offsetY}px`;
+// //       panel.style.right = "auto";
+// //       panel.style.bottom = "auto";
+// //     }
+// //   });
+// // })(); // ✅ this is the function being executed
+
+
+//   // Toggle
+//   document.getElementById("storageHeader").addEventListener("click", () => {
+//     const content = document.getElementById("storageContent");
+//     const header = document.getElementById("storageHeader");
+//     const isVisible = content.style.display !== "none";
+//     content.style.display = isVisible ? "none" : "block";
+//     header.textContent = isVisible ? "📦 localStorage Monitor ▲" : "📦 localStorage Monitor ▼";
+//   });
+
+//   setInterval(renderLocalStorageStatus, 1000);
+//   renderLocalStorageStatus();
+// })();
+
+function getLocalStorageSizeInfo() {
+  let totalBytes = 0;
+  let photoBytes = 0;
+  let photoCount = 0;
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    const value = localStorage.getItem(key);
+    if (!value) continue;
+    totalBytes += new Blob([value]).size;
+  }
+
+  try {
+    const sessions = JSON.parse(localStorage.getItem("sessions") || "[]");
+    sessions.forEach(session => {
+      if (!session.data || !Array.isArray(session.data)) return;
+      session.data.forEach(entry => {
+        if (entry.type === "photo" && entry.content?.startsWith("data:image/")) {
+          photoCount++;
+          photoBytes += new Blob([entry.content]).size;
+        }
+      });
     });
-  });
-} catch (e) {
-  console.warn("⚠️ Failed to parse sessions for photo usage:", e);
-}
+  } catch (e) {
+    console.warn("⚠️ Failed to parse sessions:", e);
+  }
 
-    }
-
-  const maxKB = 5 * 1024;
-  const totalKB = totalBytes / 1024;
-  const availableKB = maxKB - totalKB;
   const maxBytes = 5 * 1024 * 1024;
+  const totalKB = totalBytes / 1024;
+  const availableKB = (maxBytes - totalBytes) / 1024;
 
   return {
     totalKB: totalKB.toFixed(1),
     availableKB: availableKB.toFixed(1),
     photoKB: (photoBytes / 1024).toFixed(1),
     photoCount,
-    photoBytes, // ✅ Add this!
-    totalBytes // optional but useful
-  };
-  }
-
-  window.renderLocalStorageStatus = function () {
-  const content = document.getElementById("storageContent");
-  if (!content) return;
-
-  const { totalKB, availableKB, photoKB, photoCount, totalBytes, maxBytes } = getLocalStorageSizeInfo();
-  const percent = ((totalBytes / maxBytes) * 100).toFixed(1);
-
-  // Header info
-  content.innerHTML = `
-    • Used: ${totalKB} KB<br>
-    • Available: ${availableKB} KB
-  `;
-
-  // Warning
-  if (parseFloat(percent) >= 50) {
-    content.innerHTML += `<div style="color: yellow; margin-top: 5px;">⚠️ Approaching localStorage limit!</div>`;
-    if (!window.hasWarned) {
-      new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg").play().catch(() => {});
-      window.hasWarned = true;
-    }
-  } else {
-    window.hasWarned = false;
-  }
-
-
-  // Add thumbnails
-  const photoThumbs = document.createElement("div");
-  photoThumbs.style.cssText = `
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    max-height: 120px;
-    overflow-y: auto;
-    padding: 2px;
-    border-top: 1px solid #ccc;
-    margin-top: 10px;
-  `;
-
-  const photos = getLocalStoragePhotos(); // ← assumes existing function
-
-  photos.forEach((photo, index) => {
-    if (!photo.content || !photo.content.startsWith("data:image")) return;
-
-    const wrapper = document.createElement("div");
-    wrapper.style.cssText = `
-      position: relative;
-      display: inline-block;
-    `;
-
-    const img = document.createElement("img");
-    img.src = photo.content;
-    img.alt = `Photo ${index + 1}`;
-    img.style.cssText = `
-      width: 50px;
-      height: 50px;
-      object-fit: cover;
-      border-radius: 3px;
-      border: 1px solid #999;
-      max-width: 100%;
-      height: auto;
-    `;
-
-img.onclick = () => {
-  const viewer = document.createElement("div");
-  viewer.style.cssText = `
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10001;
-  `;
-
-  const fullImg = document.createElement("img");
-  fullImg.src = photo.content;
-  fullImg.style.maxWidth = "90%";
-  fullImg.style.maxHeight = "90%";
-  fullImg.style.border = "2px solid white";
-
-  viewer.appendChild(fullImg);
-  viewer.onclick = () => viewer.remove(); // Click to close
-  document.body.appendChild(viewer);
-};
-
-
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "✖";
-    delBtn.title = "Delete photo";
-    delBtn.style.cssText = `
-      position: absolute;
-      top: -6px;
-      right: -6px;
-      background: red;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 16px;
-      height: 16px;
-      font-size: 10px;
-      cursor: pointer;
-      line-height: 16px;
-      padding: 0;
-    `;
-
-    delBtn.onclick = () => {
-      deletePhotoByTimestamp(photo.timestamp, photo.isBackup);
-      renderLocalStorageStatus();
-    };
-
-    wrapper.appendChild(img);
-    wrapper.appendChild(delBtn);
-    photoThumbs.appendChild(wrapper);
-  });
-
-  if (photoThumbs.childElementCount > 0) {
-    content.appendChild(photoThumbs);
-  }
-
-  if (photoThumbs.childElementCount > 0) {
-  const tools = document.createElement("div");
-  tools.innerHTML = `
-    <button id="deleteAllPhotosBtn" style="margin-top: 10px;">🗑️ Delete All Photos</button>
-    <button id="exportPhotosBtn" style="margin-left: 10px;">💾 Export Photos JSON</button>
-  `;
-  content.appendChild(tools);
-
-  tools.querySelector("#deleteAllPhotosBtn").onclick = () => {
-    if (confirm("Are you sure you want to delete all stored photos?")) {
-      deleteAllPhotos();
-      renderLocalStorageStatus();
-    }
-  };
-
-  tools.querySelector("#exportPhotosBtn").onclick = () => {
-    exportAllPhotosAsJSON();
+    photoBytes,
+    totalBytes,
+    maxBytes
   };
 }
 
-};
+function getLocalStoragePhotos() {
+  const result = [];
+  try {
+    const sessions = JSON.parse(localStorage.getItem("sessions") || "[]");
+    sessions.forEach(session => {
+      if (!Array.isArray(session.data)) return;
+      session.data.forEach(entry => {
+        if (entry.type === "photo" && entry.content?.startsWith("data:image/")) {
+          result.push(entry);
+        }
+      });
+    });
+  } catch (e) {
+    console.warn("⚠️ Failed to get photos:", e);
+  }
+  return result;
+}
 
 function deletePhotoByTimestamp(timestamp) {
-  let updated = false;
-
-  // 1. Remove from sessions
   const sessions = JSON.parse(localStorage.getItem("sessions") || "[]");
   sessions.forEach(session => {
-    if (Array.isArray(session.data)) {
-      const originalLength = session.data.length;
-      session.data = session.data.filter(p => p.type !== "photo" || p.timestamp !== timestamp);
-      if (session.data.length < originalLength) updated = true;
-    }
+    session.data = session.data.filter(p => !(p.type === "photo" && p.timestamp === timestamp));
   });
-  if (updated) localStorage.setItem("sessions", JSON.stringify(sessions));
+  localStorage.setItem("sessions", JSON.stringify(sessions));
 
-  // 2. Remove from route_backup if exists
   const backup = JSON.parse(localStorage.getItem("route_backup") || "{}");
   if (Array.isArray(backup.routeData)) {
-    const originalLength = backup.routeData.length;
-    backup.routeData = backup.routeData.filter(p => p.type !== "photo" || p.timestamp !== timestamp);
-    if (backup.routeData.length < originalLength) {
-      localStorage.setItem("route_backup", JSON.stringify(backup));
-    }
+    backup.routeData = backup.routeData.filter(p => !(p.type === "photo" && p.timestamp === timestamp));
+    localStorage.setItem("route_backup", JSON.stringify(backup));
   }
 }
 
 function deleteAllPhotos() {
-  // Clear photo entries from sessions
   const sessions = JSON.parse(localStorage.getItem("sessions") || "[]");
   sessions.forEach(session => {
-    if (Array.isArray(session.data)) {
-      session.data = session.data.filter(e => e.type !== "photo");
-    }
+    session.data = session.data.filter(e => e.type !== "photo");
   });
   localStorage.setItem("sessions", JSON.stringify(sessions));
 
-  // Clear photo entries from backup
   const backup = JSON.parse(localStorage.getItem("route_backup") || "{}");
   if (Array.isArray(backup.routeData)) {
     backup.routeData = backup.routeData.filter(e => e.type !== "photo");
@@ -2297,57 +2441,161 @@ function deleteAllPhotos() {
 function exportAllPhotosAsJSON() {
   const photos = getLocalStoragePhotos();
   if (photos.length === 0) return alert("No photos to export.");
-
   const jsonBlob = new Blob([JSON.stringify(photos, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(jsonBlob);
-
   const a = document.createElement("a");
   a.href = url;
   a.download = "photos_export.json";
   a.click();
-
   URL.revokeObjectURL(url);
 }
 
+function renderLocalStorageStatus() {
+  const content = document.getElementById("storageContent");
+  if (!content) return;
 
-  // Draggable
-//   (function makeDraggable() {
-//   const panel = document.getElementById("localStorageStatus");
-//   const header = document.getElementById("storageHeader");
+  const { totalKB, availableKB, photoKB, photoCount, totalBytes, maxBytes } = getLocalStorageSizeInfo();
+  const percent = ((totalBytes / maxBytes) * 100).toFixed(1);
 
-//   let offsetX = 0, offsetY = 0, isDragging = false;
+  content.innerHTML = `
+    • Used: ${totalKB} KB<br>
+    • Available: ${availableKB} KB
+  `;
 
-//   header.addEventListener("mousedown", e => {
-//     isDragging = true;
-//     offsetX = e.clientX - panel.offsetLeft;
-//     offsetY = e.clientY - panel.offsetTop;
-//     panel.style.transition = "none";
-//   });
+  if (parseFloat(percent) >= 50) {
+    content.innerHTML += `<div style="color: yellow; margin-top: 5px;">⚠️ Approaching localStorage limit!</div>`;
+    if (!window.hasWarned) {
+      new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg").play().catch(() => {});
+      window.hasWarned = true;
+    }
+  } else {
+    window.hasWarned = false;
+  }
 
-//   document.addEventListener("mouseup", () => isDragging = false);
+  const photos = getLocalStoragePhotos();
+  if (photos.length) {
+    const photoThumbs = document.createElement("div");
+    photoThumbs.style.cssText = `
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 120px;
+      overflow-y: auto;
+      border-top: 1px solid #ccc;
+      padding-top: 5px;
+    `;
 
-//   document.addEventListener("mousemove", e => {
-//     if (isDragging) {
-//       panel.style.left = `${e.clientX - offsetX}px`;
-//       panel.style.top = `${e.clientY - offsetY}px`;
-//       panel.style.right = "auto";
-//       panel.style.bottom = "auto";
-//     }
-//   });
-// })(); // ✅ this is the function being executed
+    photos.forEach((photo, index) => {
+      const wrapper = document.createElement("div");
+      wrapper.style.position = "relative";
 
+      const img = document.createElement("img");
+      img.src = photo.content;
+      img.alt = `Photo ${index + 1}`;
+      img.onclick = () => {
+        const viewer = document.createElement("div");
+        viewer.style.cssText = `
+          position: fixed; top: 0; left: 0;
+          width: 100vw; height: 100vh;
+          background: rgba(0,0,0,0.9);
+          display: flex; align-items: center; justify-content: center;
+          z-index: 10001;
+        `;
+        const fullImg = document.createElement("img");
+        fullImg.src = photo.content;
+        fullImg.style.maxWidth = "90%";
+        fullImg.style.maxHeight = "90%";
+        viewer.appendChild(fullImg);
+        viewer.onclick = () => viewer.remove();
+        document.body.appendChild(viewer);
+      };
 
-  // Toggle
-  document.getElementById("storageHeader").addEventListener("click", () => {
-    const content = document.getElementById("storageContent");
-    const header = document.getElementById("storageHeader");
-    const isVisible = content.style.display !== "none";
-    content.style.display = isVisible ? "none" : "block";
-    header.textContent = isVisible ? "📦 localStorage Monitor ▲" : "📦 localStorage Monitor ▼";
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "✖";
+      delBtn.title = "Delete photo";
+      delBtn.style.cssText = `
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        background: red;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        font-size: 10px;
+        cursor: pointer;
+        line-height: 16px;
+        padding: 0;
+      `;
+      delBtn.onclick = () => {
+        deletePhotoByTimestamp(photo.timestamp);
+        renderLocalStorageStatus();
+      };
+
+      wrapper.appendChild(img);
+      wrapper.appendChild(delBtn);
+      photoThumbs.appendChild(wrapper);
+    });
+
+    content.appendChild(photoThumbs);
+
+    const tools = document.createElement("div");
+    tools.innerHTML = `
+      <button id="deleteAllPhotosBtn" style="margin-top: 10px;">🗑️ Delete All Photos</button>
+      <button id="exportPhotosBtn" style="margin-left: 10px;">💾 Export Photos JSON</button>
+    `;
+    content.appendChild(tools);
+
+    tools.querySelector("#deleteAllPhotosBtn").onclick = () => {
+      if (confirm("Are you sure you want to delete all stored photos?")) {
+        deleteAllPhotos();
+        renderLocalStorageStatus();
+      }
+    };
+    tools.querySelector("#exportPhotosBtn").onclick = exportAllPhotosAsJSON;
+  }
+}
+
+document.getElementById("storageHeader").addEventListener("click", () => {
+  const content = document.getElementById("storageContent");
+  const header = document.getElementById("storageHeader");
+  const isVisible = content.style.display !== "none";
+  content.style.display = isVisible ? "none" : "block";
+  header.textContent = isVisible ? "📦 localStorage Monitor ▲" : "📦 localStorage Monitor ▼";
+});
+
+setInterval(renderLocalStorageStatus, 1000);
+renderLocalStorageStatus();
+(function makeDraggable() {
+  const panel = document.getElementById("localStorageStatus");
+  const header = document.getElementById("storageHeader");
+
+  let offsetX = 0, offsetY = 0, isDragging = false;
+
+  header.addEventListener("mousedown", e => {
+    isDragging = true;
+    offsetX = e.clientX - panel.offsetLeft;
+    offsetY = e.clientY - panel.offsetTop;
+    panel.classList.add("dragging");
+    panel.style.transition = "none";
   });
 
-  setInterval(renderLocalStorageStatus, 1000);
-  renderLocalStorageStatus();
+  document.addEventListener("mouseup", () => {
+    isDragging = false;
+    panel.classList.remove("dragging");
+  });
+
+  document.addEventListener("mousemove", e => {
+    if (isDragging) {
+      panel.style.left = `${e.clientX - offsetX}px`;
+      panel.style.top = `${e.clientY - offsetY}px`;
+      panel.style.right = "auto";
+      panel.style.bottom = "auto";
+      panel.style.position = "fixed";
+    }
+  });
 })();
 
 function getLocalStoragePhotos() {
