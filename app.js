@@ -2568,35 +2568,92 @@ document.getElementById("storageHeader").addEventListener("click", () => {
 
 setInterval(renderLocalStorageStatus, 1000);
 renderLocalStorageStatus();
+
 (function makeDraggable() {
   const panel = document.getElementById("localStorageStatus");
   const header = document.getElementById("storageHeader");
 
   let offsetX = 0, offsetY = 0, isDragging = false;
 
-  header.addEventListener("mousedown", e => {
+  function startDrag(x, y) {
     isDragging = true;
-    offsetX = e.clientX - panel.offsetLeft;
-    offsetY = e.clientY - panel.offsetTop;
+    offsetX = x - panel.offsetLeft;
+    offsetY = y - panel.offsetTop;
     panel.classList.add("dragging");
     panel.style.transition = "none";
-  });
+  }
 
-  document.addEventListener("mouseup", () => {
+  function onMove(x, y) {
+    if (!isDragging) return;
+    panel.style.left = `${x - offsetX}px`;
+    panel.style.top = `${y - offsetY}px`;
+    panel.style.right = "auto";
+    panel.style.bottom = "auto";
+    panel.style.position = "fixed";
+  }
+
+  function stopDrag() {
     isDragging = false;
     panel.classList.remove("dragging");
+  }
+
+  // Mouse events
+  header.addEventListener("mousedown", e => {
+    e.preventDefault();
+    startDrag(e.clientX, e.clientY);
   });
 
   document.addEventListener("mousemove", e => {
-    if (isDragging) {
-      panel.style.left = `${e.clientX - offsetX}px`;
-      panel.style.top = `${e.clientY - offsetY}px`;
-      panel.style.right = "auto";
-      panel.style.bottom = "auto";
-      panel.style.position = "fixed";
-    }
+    onMove(e.clientX, e.clientY);
   });
+
+  document.addEventListener("mouseup", stopDrag);
+
+  // Touch events
+  header.addEventListener("touchstart", e => {
+    const touch = e.touches[0];
+    startDrag(touch.clientX, touch.clientY);
+  });
+
+  document.addEventListener("touchmove", e => {
+    if (!isDragging) return;
+    const touch = e.touches[0];
+    onMove(touch.clientX, touch.clientY);
+  }, { passive: false });
+
+  document.addEventListener("touchend", stopDrag);
 })();
+
+
+// (function makeDraggable() {
+//   const panel = document.getElementById("localStorageStatus");
+//   const header = document.getElementById("storageHeader");
+
+//   let offsetX = 0, offsetY = 0, isDragging = false;
+
+//   header.addEventListener("mousedown", e => {
+//     isDragging = true;
+//     offsetX = e.clientX - panel.offsetLeft;
+//     offsetY = e.clientY - panel.offsetTop;
+//     panel.classList.add("dragging");
+//     panel.style.transition = "none";
+//   });
+
+//   document.addEventListener("mouseup", () => {
+//     isDragging = false;
+//     panel.classList.remove("dragging");
+//   });
+
+//   document.addEventListener("mousemove", e => {
+//     if (isDragging) {
+//       panel.style.left = `${e.clientX - offsetX}px`;
+//       panel.style.top = `${e.clientY - offsetY}px`;
+//       panel.style.right = "auto";
+//       panel.style.bottom = "auto";
+//       panel.style.position = "fixed";
+//     }
+//   });
+// })();
 
 function getLocalStoragePhotos() {
   const photos = [];
