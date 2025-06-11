@@ -28,22 +28,12 @@
   border-bottom: 1px solid #ccc;
 }
 
-    .top-bar, .bottom-bar, .media-panel, .floating-left, .floating-right {
+/*     .top-bar, .bottom-bar, .media-panel, .floating-left, .floating-right {
       position: absolute;
       z-index: 1000;
-    }
-    .top-bar {
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.6);
-      padding: 2px 2px;
-      border-radius: 10px;
-      color: white;
-      display: flex;
-      gap: 5px;
-      align-items: center;
-    }
+    } */
+    align-items: center;
+      justify-content: center;
 /*     .bottom-banner {
   position: fixed;
   bottom: 0;
