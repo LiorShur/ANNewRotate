@@ -440,21 +440,21 @@
     }
 
 .storage-monitor {
-  position: absolute;
-  top: 100px:
+  position: fixed !important;
+  top: 70px; /* 10px (top-bar top) + 44px (estimated top-bar height) + 6px (top-bar padding) + 5px (desired gap) + 5px buffer */
   left: 50%;
+  transform: translateX(-50%);
   width: 250px;
   max-height: 90vh;
-  background: #f5f5f5;
+  background: black;
   border: 1px solid #999;
   border-radius: 5px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   font-family: Arial, sans-serif;
   font-size: 14px;
   padding: 10px;
-  z-index: 10000;
- color: #fff;              /* white text */
- background-color: black;
+  z-index: 2100 !important; /* Higher than top-bar (2000) but lower than compass (2500) */
+  color: #fff;
 }
 
 .storage-monitor img {
@@ -469,11 +469,13 @@
   font-size: 12px;
   cursor: pointer;
 }
-    #localStorageStatus.dragging {
+
+#localStorageStatus.dragging {
   transition: none !important;
   cursor: move;
 }
-    #storageHeader {
+
+#storageHeader {
   padding: 8px;
   background: black;
   color: #fff;
@@ -482,8 +484,34 @@
   user-select: none;
 }
 
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .storage-monitor {
+    top: 65px; /* Adjusted for mobile top-bar positioning */
+    left: 10px;
+    right: 10px;
+    width: auto;
+    transform: none;
+  }
+}
 
+@media (max-width: 480px) {
+  .storage-monitor {
+    top: 60px;
+    left: 5px;
+    right: 5px;
+    width: auto;
+    max-height: 70vh;
+  }
+}
 
+/* Landscape orientation adjustment */
+@media (max-height: 500px) and (orientation: landscape) {
+  .storage-monitor {
+    top: 45px; /* Adjusted for landscape top-bar positioning */
+    max-height: 60vh;
+  }
+}
     /* MOBILE RESPONSIVE DESIGN */
     @media (max-width: 768px) {
       .top-bar {
