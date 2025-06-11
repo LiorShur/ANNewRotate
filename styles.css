@@ -494,7 +494,7 @@ width: 40px;
 .storage-monitor {
   position: fixed;
   bottom: 10px;
-  right: 10px;
+  margin: 0 auto;
   max-width: 95vw;
   background: rgba(0, 0, 0, 0.85);
   color: white;
