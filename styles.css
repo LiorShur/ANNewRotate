@@ -510,7 +510,8 @@ width: 40px;
 
 .storage-monitor .header {
   padding: 6px 10px;
-  background: #444;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
   font-weight: bold;
   cursor: pointer;
   border-radius: 6px 6px 0 0;
