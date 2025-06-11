@@ -457,12 +457,14 @@ width: 40px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  color: black;
 }
 
 #accessibilityForm label {
   display: block;
   margin-top: 8px;
   font-weight: bold;
+  color: black;
 }
 
 #accessibilityForm input,
@@ -472,10 +474,12 @@ width: 40px;
   margin-top: 2px;
   padding: 5px;
   font-size: 14px;
+  color: black;
 }
 
 #accessibilityForm input[type="file"] {
   margin-top: 5px;
+  color: black;
 }
 
 #accessibilityForm button {
