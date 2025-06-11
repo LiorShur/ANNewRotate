@@ -1018,7 +1018,7 @@ function getSmoothedHeading() {
 // Toggle button handler
   toggleBtn.addEventListener('click', () => {
     rotationEnabled = !rotationEnabled;
-    toggleBtn.innerText = rotationEnabled ? 'Disable Rotation' : 'Enable Rotation';
+    toggleBtn.style.backgroundColor = rotationEnabled ? "green" : "black";
     
     if (rotationEnabled) {
       // Initialize smoothed heading to current heading
