@@ -90,14 +90,14 @@
       position: fixed !important;
       right: 10px;
       top: 50%;
-      transform: translateY(-50%) translateX(60px);
+      transform: translateY(-50%) translateX(0px);
       z-index: 2000 !important;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease, transform 0.3s ease;
+      opacity: 1;
+      pointer-events: auto;
+/*       transition: opacity 0.3s ease, transform 0.3s ease; */
     }
 
     .media-panel.open {
@@ -857,12 +857,12 @@
         <circle cx="12" cy="4" r="2"/>
         <path d="M15.5 8H8.5c-.5 0-1 .5-1 1s.5 1 1 1h1.5v6l-2 2v2h2l2-2 2 2h2v-2l-2-2V10H15.5c.5 0 1-.5 1-1s-.5-1-1-1z"/>
     </svg></button>
-  <button class="round-button" onclick="toggleDarkMode()">🌓</button>
+<!--   <button class="round-button" onclick="toggleDarkMode()">🌓</button> -->
 </div>
 <!-- ♿🧭 -->
-<div class="floating-right">
+<!-- <div class="floating-right">
   <button class="round-button" onclick="toggleMediaPanel()">➕</button>
-</div>
+</div> -->
 
 <div class="media-panel" id="mediaPanel">
   <button id="takePhotoBtn" class="round-button" onclick="capturePhoto()"><svg viewBox="0 0 24 24">
