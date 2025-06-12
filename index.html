@@ -766,10 +766,13 @@
 <!-- Floating control buttons -->
 <div class="floating-left">
   <button id="toggleBtn" class="round-button">🧭</button>
-  <button class="round-button" onclick="openAccessibilityForm()">♿</button>
+  <button class="round-button" onclick="openAccessibilityForm()"><svg viewBox="0 0 24 24">
+        <circle cx="12" cy="4" r="2"/>
+        <path d="M15.5 8H8.5c-.5 0-1 .5-1 1s.5 1 1 1h1.5v6l-2 2v2h2l2-2 2 2h2v-2l-2-2V10H15.5c.5 0 1-.5 1-1s-.5-1-1-1z"/>
+    </svg></button>
   <button class="round-button" onclick="toggleDarkMode()">🌓</button>
 </div>
-
+<!-- ♿ -->
 <div class="floating-right">
   <button class="round-button" onclick="toggleMediaPanel()">➕</button>
 </div>
