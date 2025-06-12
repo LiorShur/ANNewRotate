@@ -221,7 +221,7 @@
     }
 
     /* ROUND BUTTONS */
-    .round-button {
+/*     .round-button {
       width: 44px;
       height: 44px;
       border-radius: 50%;
@@ -239,16 +239,44 @@
       position: relative;
       z-index: inherit;
       flex-shrink: 0;
-    }
+    } */
 
-    .round-button:hover {
+/*     .round-button:hover {
       background: rgba(240, 240, 240, 0.95);
       transform: scale(1.05);
     }
-
+ */
     .round-button:active {
       transform: scale(0.95);
     }
+    .round-button {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.round-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.round-button svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
 
     /* REGULAR BUTTONS */
     button {
