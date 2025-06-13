@@ -694,7 +694,7 @@ function openAccessibilityForm(onComplete) {
   const form = document.getElementById("accessibilityForm");
 
   // Prefill logic if needed
-  form.style.display = "block";
+  form.style.display = "flex";
 
   form._onComplete = onComplete; // store callback
 }
