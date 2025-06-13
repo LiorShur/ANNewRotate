@@ -1,4 +1,4 @@
-
+Acc
 // === GLOBAL VARIABLES ===
 let map, marker, watchId;
 let path = [];
@@ -364,28 +364,55 @@ function positionHandler(position) {
 }
 
 
-window.stopTracking = function () {
-  // 5. Cleanup (if needed for pause/stop tracking)
+// window.stopTracking = function () {
+//   // 5. Cleanup (if needed for pause/stop tracking)
 
+//   if (watchId) navigator.geolocation.clearWatch(watchId);
+//   stopTimer();
+//   stopAutoBackup();
+// const wantsToFill = confirm("Do you want to fill out the accessibility questionnaire?");
+// if (wantsToFill) openAccessibilityForm();
+
+//   const wantsToSave = confirm("💾 Do you want to save this route?");
+//   if (wantsToSave) {
+//     const wasSaved = saveSession(); // returns true if saved
+//     if (wasSaved) {
+//       //Summary();
+//       resetApp();
+//     } else {
+//       resumeTracking();
+//     }
+//   } else {
+//     resumeTracking();
+//   }
+// };
+
+window.stopTracking = function () {
   if (watchId) navigator.geolocation.clearWatch(watchId);
   stopTimer();
   stopAutoBackup();
-const wantsToFill = confirm("Do you want to fill out the accessibility questionnaire?");
-if (wantsToFill) openAccessibilityForm();
 
+  const wantsToFill = confirm("Do you want to fill out the accessibility questionnaire?");
+  if (wantsToFill) {
+    openAccessibilityForm(() => {
+      proceedWithRouteSave();
+    });
+  } else {
+    proceedWithRouteSave();
+  }
+}
+
+function proceedWithRouteSave() {
   const wantsToSave = confirm("💾 Do you want to save this route?");
   if (wantsToSave) {
-    const wasSaved = saveSession(); // returns true if saved
-    if (wasSaved) {
-      //Summary();
-      resetApp();
-    } else {
-      resumeTracking();
-    }
+    const wasSaved = saveSession();
+    if (wasSaved) resetApp();
+    else resumeTracking();
   } else {
     resumeTracking();
   }
-};
+}
+
 
 function resetApp() {
   // Clear state
@@ -661,28 +688,21 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-function openAccessibilityForm() {
-  document.getElementById("accessibilityOverlay").style.display = "flex";
+// function openAccessibilityForm() {
+//   document.getElementById("accessibilityOverlay").style.display = "flex";
+// }
+function openAccessibilityForm(onComplete) {
+  const form = document.getElementById("accessibilityForm");
+
+  // Prefill logic if needed
+  form.style.display = "block";
+
+  form._onComplete = onComplete; // store callback
 }
 
 function closeAccessibilityForm() {
   document.getElementById("accessibilityOverlay").style.display = "none";
 }
-
-// Save handler
-document.getElementById("accessibilityForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-  const formData = new FormData(e.target);
-  const accessibilityData = {};
-
-  for (const [key, value] of formData.entries()) {
-    accessibilityData[key] = value;
-  }
-
-  localStorage.setItem("accessibilityData", JSON.stringify(accessibilityData));
-  alert("✅ Questionnaire saved!");
-  closeAccessibilityForm();
-});
 
 // ===  ROUTE & NOTES ===
 let noteMarkers = []; // Global array to track note markers
@@ -2035,6 +2055,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       alert("✅ Questionnaire saved and added to route!");
       closeAccessibilityForm();
+      if (typeof e.target._onComplete === "function") {
+    e.target._onComplete();  // resume tracking logic
+    e.target._onComplete = null;
+  }
     });
   }
 });
