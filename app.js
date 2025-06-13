@@ -691,7 +691,7 @@ window.addEventListener("DOMContentLoaded", () => {
 //   document.getElementById("accessibilityOverlay").style.display = "flex";
 // }
 function openAccessibilityForm(onComplete) {
-  const form = document.getElementById("accessibilityForm");
+  const form = document.getElementById("accessibilityOverlay");
 
   // Prefill logic if needed
   form.style.display = "flex";
