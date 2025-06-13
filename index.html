@@ -976,7 +976,78 @@
 <!-- Accessibility Form -->
 <div id="accessibilityOverlay" style="display:none;">
   <div id="accessibilityFormContainer">
-    <h2>🧭 Accessibility Questionnaire</h2>
+    <h2>🧭 טופס נגישות</h2>
+    <form id="accessibilityForm">
+      <button type="button" onclick="closeAccessibilityForm()">🚪 סגור</button>
+
+      <label>חניות נכים – כמה:</label>
+      <input type="number" name="disabledParkingCount" required>
+      <label>תמונה:</label>
+      <input type="file" name="disabledParkingImage" accept="image/*"><br><br>
+
+      <label>תיאור הדרך:</label>
+      <select name="pathType" required>
+        <option value="">בחר</option>
+        <option>אספלט</option>
+        <option>בטון</option>
+        <option>דק עץ</option>
+        <option>שביל כורכר (לא נגיש)</option>
+      </select>
+      <label>תמונה:</label>
+      <input type="file" name="pathImage" accept="image/*"><br><br>
+
+      <label>אורך הדרך הנגישה (במטרים):</label>
+      <input type="number" name="accessibleLength" required>
+
+      <label>סוג המסלול:</label>
+      <select name="routeType">
+        <option>הלוך חזור</option>
+        <option>מעגלי</option>
+      </select>
+
+      <label>שיפוע השביל:</label>
+      <select name="slope">
+        <option>אופקי</option>
+        <option>שיפועים מתונים</option>
+        <option>שיפועים תלולים (לא נגיש)</option>
+      </select>
+
+      <label>נקודות עניין לאורך הדרך:</label>
+      <textarea name="pointsOfInterest"></textarea>
+      <label>תמונה:</label>
+      <input type="file" name="poiImage" accept="image/*"><br><br>
+
+      <label>תצפיות:</label>
+      <input type="checkbox" name="lookouts"> יש
+      <label>תמונה:</label>
+      <input type="file" name="lookoutImage" accept="image/*"><br><br>
+
+      <label>פינות פיקניק נגישות:</label>
+      <input type="checkbox" name="picnicSpots"> יש
+      <label>תמונה:</label>
+      <input type="file" name="picnicImage" accept="image/*"><br><br>
+
+      <label>שירותי נכים:</label>
+      <input type="checkbox" name="accessibleToilets"> יש
+      <label>תמונה:</label>
+      <input type="file" name="toiletImage" accept="image/*"><br><br>
+
+      <label>ספסלים לאורך הדרך:</label>
+      <input type="checkbox" name="benches"> יש
+      <label>תמונה:</label>
+      <input type="file" name="benchImage" accept="image/*"><br><br>
+
+      <label>הצללה:</label>
+      <select name="shade">
+        <option>מוצל</option>
+        <option>מוצל חלקית</option>
+        <option>לא מוצל</option>
+      </select><br><br>
+
+      <button type="submit">✔️ שמור</button>
+      <button type="button" onclick="closeAccessibilityForm()">❌ ביטול</button>
+    </form>
+<!--     <h2>🧭 Accessibility Questionnaire</h2>
     <form id="accessibilityForm">
       <button type="button" onclick="closeAccessibilityForm()">🚪 Close</button>
 
@@ -1046,7 +1117,7 @@
 
       <button type="submit">✔️ Save</button>
       <button type="button" onclick="closeAccessibilityForm()">❌ Cancel</button>
-    </form>
+    </form> -->
   </div>
 </div>
 
