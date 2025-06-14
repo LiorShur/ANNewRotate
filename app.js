@@ -1557,7 +1557,7 @@ ${markersJS}
 
 // Accessibility summary rendering
 (function(){
-  const data = ${accessibilityJSON};
+  const data = ${accessibilityData};
   if (!data) return;
   const html = \`
     <div id="accessibilityDetails">
