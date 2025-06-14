@@ -1468,7 +1468,7 @@ L.marker([${entry.coords.lat}, ${entry.coords.lng}])
   // const accessibilityJSON = JSON.stringify(accessibilityData);
 
   const accessibilityData = JSON.parse(localStorage.getItem("accessibilityData") || "null");
-
+console.log(accessibilityData);
   const boundsVar = JSON.stringify(pathCoords);
 
   const htmlContent = `
