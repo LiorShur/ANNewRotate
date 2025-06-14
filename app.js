@@ -1688,10 +1688,12 @@ L.marker([${entry.coords.lat}, ${entry.coords.lng}])
       }
     }
     
-  const accessibilityEntry = routeData.find(e => e.type === "accessibility");
-  const accessibilityData = accessibilityEntry ? accessibilityEntry.content : null;
-  const accessibilityJSON = JSON.stringify(accessibilityData);
-    
+  // const accessibilityEntry = routeData.find(e => e.type === "accessibility");
+  // const accessibilityData = accessibilityEntry ? accessibilityEntry.content : null;
+  // const accessibilityJSON = JSON.stringify(accessibilityData);
+
+    const accessibilityData = JSON.parse(localStorage.getItem("accessibilityData") || "null");
+   
     if (pathCoords.length === 0) continue;
 
     const boundsVar = JSON.stringify(pathCoords);
