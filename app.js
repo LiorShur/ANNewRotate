@@ -1463,9 +1463,11 @@ L.marker([${entry.coords.lat}, ${entry.coords.lng}])
   zip.file("elevation.png", elevationBlob);
   mediaForArchive["elevation.png"] = base64Chart.split(",")[1];
 
-  const accessibilityEntry = routeData.find(e => e.type === "accessibility");
-  const accessibilityData = accessibilityEntry ? accessibilityEntry.content : null;
-  const accessibilityJSON = JSON.stringify(accessibilityData);
+  // const accessibilityEntry = routeData.find(e => e.type === "accessibility");
+  // const accessibilityData = accessibilityEntry ? accessibilityEntry.content : null;
+  // const accessibilityJSON = JSON.stringify(accessibilityData);
+
+  const accessibilityData = JSON.parse(localStorage.getItem("accessibilityData") || "null");
 
   const boundsVar = JSON.stringify(pathCoords);
 
@@ -1810,7 +1812,7 @@ function showFullScreen(img) {
 }
 // Accessibility summary rendering
 (function(){
-  const data = ${accessibilityJSON};
+  const data = ${accessibilityData};
   if (!data) return;
   const html = \`
     <div id="accessibilityDetails">
