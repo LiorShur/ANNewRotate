@@ -1293,7 +1293,7 @@ const SummaryArchive = (() => {
 
 function generateAccessibilityHTML(accessibilityData) {
   if (!accessibilityData) return "";
-
+console.log(accessibilityData);
   return `
     <div id="accessibilityDetails">
       <h3>♿ Accessibility Details</h3>
