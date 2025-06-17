@@ -1291,8 +1291,8 @@ const SummaryArchive = (() => {
   };
 })();
 
-function generateAccessibilityHTML() {
-  if (!) return "";
+function generateAccessibilityHTML(accessibilityData) {
+  if (!accessibilityData) return "";
 
   return `
     <div id="accessibilityDetails">
