@@ -1291,24 +1291,24 @@ const SummaryArchive = (() => {
   };
 })();
 
-function generateAccessibilityHTML(accessibilityData) {
-  if (!accessibilityData) return "";
+function generateAccessibilityHTML() {
+  if (!) return "";
 
   return `
     <div id="accessibilityDetails">
       <h3>♿ Accessibility Details</h3>
       <ul>
-        <li><b>Disabled Parking:</b> ${accessibilityData.disabledParkingCount || "N/A"}</li>
-        <li><b>Path Type:</b> ${accessibilityData.pathType || "N/A"}</li>
-        <li><b>Accessible Length:</b> ${accessibilityData.accessibleLength || "N/A"} m</li>
-        <li><b>Route Type:</b> ${accessibilityData.routeType || "N/A"}</li>
-        <li><b>Slope:</b> ${accessibilityData.slope || "N/A"}</li>
-        <li><b>Points of Interest:</b> ${accessibilityData.pointsOfInterest || "N/A"}</li>
-        <li><b>Lookouts:</b> ${accessibilityData.lookouts ? "Yes" : "No"}</li>
-        <li><b>Picnic Spots:</b> ${accessibilityData.picnicSpots ? "Yes" : "No"}</li>
-        <li><b>Accessible Toilets:</b> ${accessibilityData.accessibleToilets ? "Yes" : "No"}</li>
-        <li><b>Benches:</b> ${accessibilityData.benches ? "Yes" : "No"}</li>
-        <li><b>Shade:</b> ${accessibilityData.shade || "N/A"}</li>
+        <li><b>Disabled Parking:</b> ${.disabledParkingCount || "N/A"}</li>
+        <li><b>Path Type:</b> ${.pathType || "N/A"}</li>
+        <li><b>Accessible Length:</b> ${.accessibleLength || "N/A"} m</li>
+        <li><b>Route Type:</b> ${.routeType || "N/A"}</li>
+        <li><b>Slope:</b> ${.slope || "N/A"}</li>
+        <li><b>Points of Interest:</b> ${.pointsOfInterest || "N/A"}</li>
+        <li><b>Lookouts:</b> ${.lookouts ? "Yes" : "No"}</li>
+        <li><b>Picnic Spots:</b> ${.picnicSpots ? "Yes" : "No"}</li>
+        <li><b>Accessible Toilets:</b> ${.accessibleToilets ? "Yes" : "No"}</li>
+        <li><b>Benches:</b> ${.benches ? "Yes" : "No"}</li>
+        <li><b>Shade:</b> ${.shade || "N/A"}</li>
       </ul>
     </div>
   `;
@@ -1557,7 +1557,7 @@ ${markersJS}
 
 // Accessibility summary rendering
 (function(){
-  const data = ${accessibilityData};
+  const data = ${JSON.stringify(accessibilityData)};
   if (!data) return;
   const html = \`
     <div id="accessibilityDetails">
