@@ -1291,28 +1291,28 @@ const SummaryArchive = (() => {
   };
 })();
 
-function generateAccessibilityHTML(accessibilityData) {
-  if (!accessibilityData) return "";
-console.log(accessibilityData);
-  return `
-    <div id="accessibilityDetails">
-      <h3>♿ Accessibility Details</h3>
-      <ul>
-        <li><b>Disabled Parking:</b> ${.disabledParkingCount || "N/A"}</li>
-        <li><b>Path Type:</b> ${.pathType || "N/A"}</li>
-        <li><b>Accessible Length:</b> ${.accessibleLength || "N/A"} m</li>
-        <li><b>Route Type:</b> ${.routeType || "N/A"}</li>
-        <li><b>Slope:</b> ${.slope || "N/A"}</li>
-        <li><b>Points of Interest:</b> ${.pointsOfInterest || "N/A"}</li>
-        <li><b>Lookouts:</b> ${.lookouts ? "Yes" : "No"}</li>
-        <li><b>Picnic Spots:</b> ${.picnicSpots ? "Yes" : "No"}</li>
-        <li><b>Accessible Toilets:</b> ${.accessibleToilets ? "Yes" : "No"}</li>
-        <li><b>Benches:</b> ${.benches ? "Yes" : "No"}</li>
-        <li><b>Shade:</b> ${.shade || "N/A"}</li>
-      </ul>
-    </div>
-  `;
-}
+// function generateAccessibilityHTML(accessibilityData) {
+//   if (!accessibilityData) return "";
+// console.log(accessibilityData);
+//   return `
+//     <div id="accessibilityDetails">
+//       <h3>♿ Accessibility Details</h3>
+//       <ul>
+//         <li><b>Disabled Parking:</b> ${.disabledParkingCount || "N/A"}</li>
+//         <li><b>Path Type:</b> ${.pathType || "N/A"}</li>
+//         <li><b>Accessible Length:</b> ${.accessibleLength || "N/A"} m</li>
+//         <li><b>Route Type:</b> ${.routeType || "N/A"}</li>
+//         <li><b>Slope:</b> ${.slope || "N/A"}</li>
+//         <li><b>Points of Interest:</b> ${.pointsOfInterest || "N/A"}</li>
+//         <li><b>Lookouts:</b> ${.lookouts ? "Yes" : "No"}</li>
+//         <li><b>Picnic Spots:</b> ${.picnicSpots ? "Yes" : "No"}</li>
+//         <li><b>Accessible Toilets:</b> ${.accessibleToilets ? "Yes" : "No"}</li>
+//         <li><b>Benches:</b> ${.benches ? "Yes" : "No"}</li>
+//         <li><b>Shade:</b> ${.shade || "N/A"}</li>
+//       </ul>
+//     </div>
+//   `;
+// }
 
 
 function haversineDistance(a, b) {
